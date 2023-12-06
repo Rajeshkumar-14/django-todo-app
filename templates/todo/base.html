@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Website Icon -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/9062/9062934.png?uid=R122987675&ga=GA1.1.1273494308.1700037058&semt=ais" type="image/x-icon">
+    <!-- Bootstrap Link -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <!-- Icon LInk -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <!-- Custom Style Sheets -->
+    <link rel="stylesheet" href="{% static 'todo/css/index-style.css' %}">
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Animate CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- DataTable -->
+    <link href="{% static 'ajax_datatable/css/style.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+
+    
+</head>
+
+
+
+<body>
+    {% block nav-bar %}
+    <nav class="navbar navbar-expand-lg p-2 position-sticky z-3 navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://github.com/Rajeshkumar-14" target="_blank">
+                <i class="fa-solid fa-list me-2"></i>TODO APP
+            </a>
+            <ul class="navbar-nav mb-2 ms-auto mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="fa-solid navbar-theme-icon fa-lightbulb me-2"></i>
+                        <span class="navbar-theme-text">Theme</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end w-100" style="position: absolute;">
+                        <li><button class="dropdown-item toggle-light" href="#"><i
+                                    class="fa-solid fa-lightbulb me-3"></i>Light</button></li>
+                        <li><button class="dropdown-item toggle-dark" href="#"><i
+                                    class="fa-solid fa-moon me-3"></i>Dark</button>
+                        </li>
+                        <li><button class="dropdown-item toggle-default" href="#"><i
+                                    class="fa-solid fa-circle-half-stroke me-3"></i>Default</button></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    {% endblock nav-bar %}
+
+    {% block index %}
+
+    {% endblock index %}
+    <div class="position-fixed bottom-0 start-0 m-3">
+        <a href="https://github.com/Rajeshkumar-14" class="btn btn-transparent" target="_blank">
+            <i class="fa-brands fa-github fa-lg me-1"></i>RajeshKumar
+        </a>
+    </div>
+    <div class="position-fixed bottom-0 end-0 m-3">
+        <a href="{% url 'logout' %}" class="btn btn-transparent border rounded-2">
+            <i class="fa-solid fa-arrow-right-to-bracket fa-lg me-2"></i></i>Log-out
+        </a>
+    </div>
+    <!-- JQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Popper.js (required for dropdowns) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+
+    <!-- Sweet Alert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'todo/js/index-script.js' %}"></script>
+
+    <!-- DataTables -->
+    <script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{% static 'ajax_datatable/js/utils.js' %}"></script>
+
+    {% block script %}
+
+    {% endblock script %}
+
+</body>
+
+
+</html>

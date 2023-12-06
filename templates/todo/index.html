@@ -1,0 +1,355 @@
+{% extends 'todo/base.html' %}
+{% load static %}
+{% block title %}TODO-HOME{% endblock title %}
+
+{% block index %}
+<div class="container-fluid">
+    <div class="card display-card shadow-lg">
+        <div class="card-header text-center">
+            <h4><i class="fa-solid fa-table-list me-2"></i>MY TODO-LIST</h4>
+        </div>
+        <div class="card-body overflow-auto" style="max-height: 525px;">
+            <div class="table-responsive">
+                <table id="task-display-table" width="auto"
+                    class="table table-striped-columns table-hover task-display-table"></table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex">
+                <button type="button" class="btn btn-custom w-100" data-bs-toggle="modal" data-bs-target="#CreateTaskModal">
+                    ADD NEW TASK
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Create Modal -->
+<div class="modal fade" id="CreateTaskModal" tabindex="-1" aria-labelledby="CreateTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" class="create-task-form" id="create-task-form">
+                    {% csrf_token %}
+                    <input type="hidden" value="" id="task_id">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="title" id="title" placeholder="Enter Title"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" placeholder="Description" name="description" id="description"
+                            rows="2" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn task-create-btn btn-custom">ADD TASK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Modal -->
+<div class="modal fade" id="EditTaskModal" tabindex="-1" aria-labelledby="EditTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" class="edit-task-form" id="edit-task-form">
+                    {% csrf_token %}
+                    <input type="hidden" value="" id="task_id">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="edit-title" id="edit-title"
+                            placeholder="Enter Title" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" placeholder="Description" name="edit-description"
+                            id="edit-description" rows="2" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn task-update-btn btn-custom">UPDATE TASK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Display Modal -->
+<div class="modal fade" id="DisplayTaskModal" tabindex="-1" aria-labelledby="DisplayTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Task Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table width="auto"
+                        class="table table-striped-columns table-hover table-dark table-bordered view-task-table">
+                        <tbody>
+                            <tr>
+                                <td><strong>Task No:</strong></td>
+                                <td id="task_id"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Title:</strong></td>
+                                <td id="title"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Description:</strong></td>
+                                <td id="description"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created At:</strong></td>
+                                <td id="created_at"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Updated At:</strong></td>
+                                <td id="updated_at"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td id="status"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock index %}
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $.ajaxSetup({
+            headers: { 'X-CSRFToken': $("[name=csrfmiddlewaretoken]").val() },
+        });
+
+        try {
+            AjaxDatatableViewUtils.initialize_table(
+                $('#task-display-table'),
+                "{% url 'get-tasks' %}",
+                {
+                    serverSide: true,
+                    processing: false,
+                    autoWidth: true,
+                    scrollX: true,
+                    searching: true,
+                    order: [[0, 'desc']],
+                }
+            );
+
+            setInterval(function () {
+                $('#task-display-table').DataTable().ajax.reload(null, false);
+            }, 30000);
+        } catch (error) {
+            console.error('Error initializing DataTable:', error);
+        }
+        // Create Task
+        $('.task-create-btn').on('click', function (e) {
+            e.preventDefault();
+            var formData = $('.create-task-form').serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'create-task' %}",
+                data: formData,
+                success: function (response) {
+                    if (response.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                        $('.create-task-form').trigger('reset');
+                        $('#CreateTaskModal').modal('hide');
+                        $('#task-display-table').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle other types of errors (e.g., network error)
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while processing your request.',
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.task-edit-btn', function () {
+            let task_id = $(this).data("task-id");
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'edit-task' 0 %}".replace(0, task_id),
+                success: function (response) {
+                    $('#task_id').val(response.id);
+                    $('#edit-title').val(response.title);
+                    $('#edit-description').val(response.description);
+                    $('#EditTaskModal').modal('show');
+                },
+                error: function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while processing your request.',
+                    });
+                }
+            });
+        });
+
+        // Update Task
+        $('.task-update-btn').on('click', function (e) {
+            e.preventDefault();
+            var task_id = $('#task_id').val();
+            var formData = $('.edit-task-form').serialize();
+            console.log(task_id);
+            console.log(formData);
+            $.ajax({
+                type: "POST",
+                url: "{% url 'update-task' 0 %}".replace(0, task_id),
+                data: formData,
+                success: function (response) {
+                    if (response.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                        $('.edit-task-form').trigger('reset');
+                        $('#EditTaskModal').modal('hide');
+                        $('#task-display-table').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                        });
+
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle other types of errors (e.g., network error)
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while processing your request.',
+                    });
+                }
+            });
+        });
+
+        // Delete Task
+        $(document).on('click', '.task-delete-btn', function () {
+            let task_id = $(this).data("task-id");
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to delete this Task.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Delete it!",
+                cancelButtonText: "No, keep it",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: "{% url 'delete-task' 0 %}".replace(0, task_id),
+                        data: {
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        success: function () {
+                            Swal.fire("Deleted.!", "The Task has been deleted..", "success").then(function () {
+                                $('#task-display-table').DataTable().ajax.reload(null, false);
+                            });
+                        },
+                        error: function () {
+                            Swal.fire("Error", "An error occurred while sending the request.", "error");
+                        },
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.mark-complete-btn', function () {
+            let task_id = $(this).data("task-id");
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'task-complete' 0 %}".replace(0, task_id),
+                data: { csrfmiddlewaretoken: "{{ csrf_token }}" },
+                success: function (data) {
+                    if (data.status === "success") {
+                        // Task marked as complete successfully
+                        Swal.fire("Success", data.message, "success").then(function () {
+                            $('#task-display-table').DataTable().ajax.reload(null, false);
+                        });
+                    } else {
+                        // Task was not marked as complete
+                        Swal.fire("Error", data.message, "error");
+                    }
+                },
+                error: function () {
+                    // Error occurred while sending the request
+                    Swal.fire("Error", "An error occurred while sending the request.", "error");
+                },
+            });
+        });
+
+       // View Task
+        $(document).on('click', '.task-view-btn', function () {
+            let task_id = $(this).data("task-id");
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'display-task' 0 %}".replace(0, task_id),
+                data: { csrfmiddlewaretoken: "{{ csrf_token }}" },
+                success: function (data) {
+                    // Display Task No
+                    $('#DisplayTaskModal #task_id').text(data.task_id);
+
+                    // Display Title
+                    $('#DisplayTaskModal #title').text(data.title);
+
+                    // Display Description
+                    $('#DisplayTaskModal #description').text(data.description);
+
+                    // Display Created At with Time Ago
+                    $('#DisplayTaskModal #created_at').text(data.time_ago_created_at + ' ( ' + data.created_at + ' )');
+
+                    // Display Updated At with Time Ago
+                    $('#DisplayTaskModal #updated_at').text(data.time_ago_updated_at + ' ( ' + data.updated_at + ' )');
+
+                    // Display Status
+                    $('#DisplayTaskModal #status').text(data.status);
+
+                    // Show the modal
+                    $('#DisplayTaskModal').modal('show');
+                }
+            });
+        });
+
+    });
+
+</script>
+{% endblock script %}
