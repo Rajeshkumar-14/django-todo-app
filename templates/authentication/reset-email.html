@@ -2,46 +2,40 @@
 {% block title %}Password Reset Page{% endblock %}
 {% block reset-email %}
 
-<div class="container-fluid bg-dark p-5" style="height: 90vh;">
-    <div class="card bg-blur border border-white text-white p-5"
-        style="backdrop-filter: blur(10px) !important; background: border-box; ">
-        <div class="container mb-5 px-5">
-            <div class="card bg-blur border border-white text-center text-white mt-2 mb-4"
-                style="backdrop-filter: blur(10px) !important; background: border-box;">
-                <h5 class="text-center mt-3">RESET YOUR PASSWORD</h5>
-                <hr>
-                <div class="card-body shadow">
-                    <div class="row">
-                        <div class="col-12">
-                            <h2>Forgot your password?</h2>
-                            <p>Change your password in three easy steps. This will help you to secure your password!</p>
-                            <ol class="list-unstyled text-start" style="margin-left: 35%;">
-                                <li><span class="text-primary text-medium me-2">1. </span>Enter your email address
-                                    below.</li>
-                                <li><span class="text-primary text-medium me-2">2. </span>Our system will send you a
-                                    temporary link</li>
-                                <li><span class="text-primary text-medium me-2">3. </span>Use the link to reset your
-                                    password</li>
-                            </ol>
-
-                        </div>
-                        <div class="col-12">
-                            <h3>Enter Your Email Address:</h3>
-                            <form method="POST" class="reset-password-form needs-validation" novalidate>
-                                {% csrf_token %}
-                                <div class="col-12">
-                                    <input class="form-control mb-3" type="email" placeholder="Enter Email" name="email"
-                                        id="email" required />
+<div class="login-body">
+    <div class="section">
+        <div class="container">
+            <div class="row full-height justify-content-center">
+                <div class="col-12 text-center align-self-center py-5">
+                    <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                        <div class="card-3d-wrap mx-auto">
+                            <div class="card-3d-wrapper">
+                                <div class="card-front">
+                                    <div class="center-wrap">
+                                        <div class="section text-center">
+                                            <h3 class="mb-4 pb-3">RESET PASSWORD</h3>
+                                            <h5>Enter Your Email Address:</h5>
+                                            <form method="POST" class="login-form needs-validation" id="login-form">
+                                                {% csrf_token %}
+                                                <div class="form-group mt-2">
+                                                    <input type="email" name="email" class="form-style"
+                                                        placeholder="Email" id="email" required>
+                                                    <i class="input-icon uil uil-at"></i>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary mt-3 login-button">Get
+                                                    Reset Link</button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                                <input type="submit" value="Reset Password" class="btn btn-primary">
-                            </form>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 <script>
     (function () {
